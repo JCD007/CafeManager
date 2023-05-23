@@ -1,3 +1,5 @@
+import json
+
 from flask import (
     Flask,
     render_template,
@@ -15,6 +17,7 @@ from sqlalchemy.exc import (
     DatabaseError,
     InterfaceError,
     InvalidRequestError,
+    
 )
 from werkzeug.routing import BuildError
 from flask_bcrypt import Bcrypt,generate_password_hash, check_password_hash
@@ -29,7 +32,7 @@ from flask_login import (
 )
 
 from server import create_server,db,login_manager,bcrypt
-from models import User
+from models import User, Product, ProductSchema
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -52,7 +55,7 @@ def auth():
 
         if user and check_password_hash(user.password, _dict['password']):  
             login_user(user, remember=True)
-            return jsonify({'username': user.username, 'fullname': user.fullname}), 200
+            return jsonify({'username': user.username, 'fullname': user.fullname, 'level': user.level}), 200
         else:
             return jsonify({'message': 'Invalid credentials!'}), 401
     except Exception as e:
@@ -73,6 +76,14 @@ def create_user():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+@server.route("/api/v1/products",  methods=["GET"], strict_slashes=False)
+@login_required
+def products():
+    data = Product().query.all()
+    schema = ProductSchema(many=True)  
+    print(schema.dump(data))
+    return jsonify(schema.dump(data)), 200 
 
 
 if __name__ == "__main__":
