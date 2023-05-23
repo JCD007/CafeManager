@@ -13,7 +13,7 @@ import random
 DEBUG = True
 
 def _log(msg):
-    if debug == True:
+    if DEBUG == True:
         print(msg)
 
 ## Init Server Connection
