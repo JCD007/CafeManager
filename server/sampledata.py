@@ -40,5 +40,6 @@ def create_superuser():
 	db.session.add(superuser)
 	db.session.commit()
 
+
 create_superuser()
 create_products()

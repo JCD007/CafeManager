@@ -3,7 +3,7 @@
 # Imports Tk Interface into the program and other tkinter extensions
 
 import tkinter as tk
-from tkinter import *
+from tkinter import * 
 from tkinter import font
 from tkinter import ttk
 from tkinter import messagebox
@@ -21,7 +21,7 @@ window.title('Cafeteria Program')
 
 # These variables are lists which will contain other variables
 
-menu_list = ['Ham Sandwhich', 'Sausage Roll', 'Sushi', 'Hot Dog','Mince and Cheese Pie', 'Pizza', 'Noodles', 'Vegan Sandwhich', 'Vegan Salad', 'Vegan Pasta', 'Vegan Chilli', 'Vegan Pie'] #List containing menu items
+menu_list = ['Ham Sandwhich', 'Sausage Roll', 'Sushi', 'Hot Dog','Mince and Cheese Pie', 'Pizza', 'Noodles', 'Vegan Sandwhich', 'Vegan Salad', 'Vegan Pasta', 'Vegan Chilli', 'Vegan Pie']
 receipt_history = []
 
 # This variable is a dictionary containing strings with corresponding values

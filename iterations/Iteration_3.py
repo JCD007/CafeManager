@@ -35,9 +35,9 @@ menu_price = {
     "Vegan Pie": 4.00
 }
 
-# These variables contain string based text
+# These variables contain lists that will contain variables
 
-menu_list = ['Ham Sandwhich', 'Sausage Roll', 'Sushi', 'Hot Dog','Mince and Cheese Pie', 'Pizza', 'Noodles', 'Vegan Sandwhich', 'Vegan Salad', 'Vegan Pasta', 'Vegan Chilli', 'Vegan Pie'] #List containing menu items
+menu_list = ['Ham Sandwhich', 'Sausage Roll', 'Sushi', 'Hot Dog','Mince and Cheese Pie', 'Pizza', 'Noodles', 'Vegan Sandwhich', 'Vegan Salad', 'Vegan Pasta', 'Vegan Chilli', 'Vegan Pie']
 receipt_history = []
 receipt_history = []
 
