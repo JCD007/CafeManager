@@ -1,5 +1,7 @@
 # Documentation https://www.freecodecamp.org/news/how-to-authenticate-users-in-flask/
 from flask import Flask
+from flask_marshmallow import Marshmallow
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
@@ -20,6 +22,7 @@ login_manager.login_message_category = "info"
 
 # Init Flask, DB, migrations and encryption
 db = SQLAlchemy()
+ma = Marshmallow()
 migrate = Migrate()
 bcrypt = Bcrypt()
 
