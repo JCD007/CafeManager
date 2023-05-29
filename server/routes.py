@@ -62,14 +62,24 @@ def auth():
         return jsonify({'message': 'Internal server error!'}) ,500
 
 
-@server.route('/api/v1/users', methods=['POST'])
-@login_required
+@server.route('/api/v1/register', methods=['POST'])
 def create_user():
-    input_json = request.get_json(force=True) 
-    dictToReturn = {'text':input_json['text']}
-    return jsonify(dictToReturn)
-    return 'create_user'
+    _json = request.get_json(force=True) 
+    _dict = {'username':_json['username'], 'password':_json['password']}
 
+    user = User().query.filter_by(username=_dict['username']).first()
+    if user:
+        return jsonify({'message': 'Username already exists!'}), 409
+    else:
+        user = User(
+		username=_dict['username'], 
+		fullname=_dict['username'], 
+		password=bcrypt.generate_password_hash(_dict['password']), 
+		level=1)		
+        db.session.add(user)
+        res = db.session.commit()
+        print(res)
+        return jsonify({'message': 'User created successfully!'}), 201
 
 @server.route("/logout")
 @login_required
