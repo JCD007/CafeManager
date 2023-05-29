@@ -7,4 +7,4 @@ set FLASK_ENV=development
 
 @REM python -m flask run --cert=adhoc && Fix this to run ssl
 
-python -m flask run &&
+python -m flask --debug run &&

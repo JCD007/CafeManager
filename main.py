@@ -105,7 +105,7 @@ vegan = False
 
 def exit():
     msg = CTkMessagebox(title="Warning!", message="Are you sure you want to quit this program?",
-                        icon="warning.png", option_1="Cancel", option_2="No", option_3="Yes")
+                        icon=os.path.join(IMG_PATH,"warning.png"), option_1="Cancel", option_2="No", option_3="Yes")
     response = msg.get()
     if response=="Yes":
         window.destroy()       
@@ -123,35 +123,27 @@ def register():
     user_lg = lp_entry1.get()
     user_ps = lp_entry2.get()
     msg = CTkMessagebox(title="Confirm?", message="Are you sure you want to register this account?",
-                            icon="info.png", option_1="Cancel", option_2="No", option_3="Yes")
+                            icon=os.path.join(IMG_PATH,"info.png"), option_1="Cancel", option_2="No", option_3="Yes")
     response = msg.get()
+
     if response == "Yes":
-        if len(user_lg) <= 8:
-            for account in registered_accounts:
-                        if user_lg == account['Login']:
-                            msg = CTkMessagebox(title="Error!", message="Sorry, this username has been taken.",
-                                icon="failure.png", option_1="Ok")
-                            return
-            if not validate(lp_entry1) or not validate(lp_entry2):
-                CTkMessagebox(title="Important!", message="Login and Password cannot be empty.",
-                                icon="warning.png", option_1="Ok")
-                return
-            else:
-                msg = CTkMessagebox(title="Confirm?", message="Are you a student between the ages of 13 - 18 and currently enrolled at Botany Downs Secondary College?",
-                                icon="info.png", option_1="No", option_2="Yes")
-                response = msg.get()
-                if response == "Yes":
-                    with open("Iteration5_Login.txt", "a") as file:
-                        file.write(f"{user_lg},{user_ps}\n") 
-                        registered_accounts.append({'Login': user_lg, 'Password': user_ps})  
-                        CTkMessagebox(title="Confirmed!", message="Your account has been successfully registered!",
-                        icon="success.png", option_1="Ok")
-                else:
-                    CTkMessagebox(title="Access Denied!", message="Sorry, you are not eligible to use this program.",
-                                icon="failure.png", option_1="Ok")
+        if len(user_lg) <= 8 and len(user_ps) <= 8:
+            # Make request to server.
+
+            res = SESSION.post(f"{BASE_URI}/register", json={"username": user_lg, "password": user_ps})
+            print(res.status_code)
+
+            if res.status_code == 201:
+                CTkMessagebox(title="Confirmed!", message="Your account has been successfully registered!",
+                            icon=os.path.join(IMG_PATH,"success.png"), option_1="Ok")
+
+            elif res.status_code == 409:
+                CTkMessagebox(title="Error!", message="Sorry, this username has been taken.",
+                            icon=os.path.join(IMG_PATH,"warning.png"), option_1="Ok")
+
         else:
-            CTkMessagebox(title="Error!", message="Sorry, you are above the accepted username limit of 8 characters.",
-                                icon="failure.png", option_1="Ok")
+            CTkMessagebox(title="Error!", message="Sorry, you are above the accepted username/password limit of 8 characters.",
+                                icon=os.path.join(IMG_PATH,"warning.png"), option_1="Ok")
     else:
         return
 
@@ -167,8 +159,8 @@ def login():
     if res.status_code == 200: 
         _log(res.json())     
         USER = res.json()
-
         page2()
+
     elif res.status_code == 401: # Invalid
         pass
     elif res.status_code == 500:
@@ -192,17 +184,17 @@ def login():
     #     msg = CTkMessagebox(title="Error!", message="Login Failed, Invalid Username/Password.",
     #                         icon="warning.png", option_1="Ok")
 
-# def imported():
-#     global registered_accounts
-#     registered_accounts = []  # Clear the existing registered accounts list
-#     with open("Iteration5_Login.txt", "r") as file:
-#         for line in file:
-#             line = line.strip()
-#             try:
-#                 reg_username, reg_password = line.split(',')
-#                 registered_accounts.append({'Login': reg_username, 'Password': reg_password})
-#             except ValueError:
-#                 return
+def imported():
+    global registered_accounts
+    registered_accounts = []  # Clear the existing registered accounts list
+    with open("Iteration5_Login.txt", "r") as file:
+        for line in file:
+            line = line.strip()
+            try:
+                reg_username, reg_password = line.split(',')
+                registered_accounts.append({'Login': reg_username, 'Password': reg_password})
+            except ValueError:
+                return
 
 def show_password():
     if lp_check.get():
@@ -409,17 +401,17 @@ def menu_frame():
     mf_button1.place(x = 15, y = 80)
 
 
-    # mf_img2 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"cold_food.png")), size = (100, 100))
-    # mf_button2 = ctk.CTkButton(main, image = mf_img2, text="", command = menu_coldfood, height = 125, width = 125)
-    # mf_button2.place(x = 160, y = 80)
+    mf_img2 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"cold food.png")), size = (100, 100))
+    mf_button2 = ctk.CTkButton(main, image = mf_img2, text="", command = menu_coldfood, height = 125, width = 125)
+    mf_button2.place(x = 160, y = 80)
 
-    # mf_img3 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"dessert.png")), size = (100, 100))
-    # mf_button3 = ctk.CTkButton(main, image = mf_img3, text="", command = menu_desserts, height = 125, width = 125)
-    # mf_button3.place(x = 15, y = 220)
+    mf_img3 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"dessert.png")), size = (100, 100))
+    mf_button3 = ctk.CTkButton(main, image = mf_img3, text="", command = menu_desserts, height = 125, width = 125)
+    mf_button3.place(x = 15, y = 220)
 
-    # mf_img4 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"drinks.png")), size = (100, 100))
-    # mf_button4 = ctk.CTkButton(main, image = mf_img4, text="", command = menu_drinks, height = 125, width = 125)
-    # mf_button4.place(x = 160, y = 220)
+    mf_img4 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"drinks.png")), size = (100, 100))
+    mf_button4 = ctk.CTkButton(main, image = mf_img4, text="", command = menu_drinks, height = 125, width = 125)
+    mf_button4.place(x = 160, y = 220)
 
 # go_back() function opens process changing to the menu frame
 
@@ -427,7 +419,7 @@ def go_back():
 
     global goback_arrow
 
-    goback_arrow_img = ctk.CTkImage(Image.open("go_back.png"), size = (20, 20))
+    goback_arrow_img = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"go_back.png")), size = (20, 20))
     goback_arrow = ctk.CTkButton(main, image = goback_arrow_img, text = "", command = menu_frame, width= 25, height = 35, fg_color="#191819")
     goback_arrow.place(x=15, y=15)
 
@@ -438,83 +430,83 @@ def menu_hotfood():
 
     global hotfood_title, hotfood_label_t1, hotfood_label_t2, hotfood_label_t3, hotfood_label_t4 ,hotfood_label1, hotfood_label2, hotfood_label3, hotfood_label4, hotfood_label5, hotfood_label6, hotfood_label7, hotfood_label8
 
-    req = SESSION.get(url=f"{BASE_URI}/products")    
+    # req = SESSION.get(url=f"{BASE_URI}/products")    
 
-    _log(req)
-    _log(req.json())
+    # _log(req)
+    # _log(req.json())
 
-    startX= 15
-    startY = 70
+    # startX= 15
+    # startY = 70
 
-    if req.status_code == 200:
+    # if req.status_code == 200:
 
-        hotfood_title = ctk.CTkLabel(main, text = "Hot Foods", font = ("bold", 35), text_color = "#ffffff")
-        hotfood_title.place(x = 70, y = 20)
+    #     hotfood_title = ctk.CTkLabel(main, text = "Hot Foods", font = ("bold", 35), text_color = "#ffffff")
+    #     hotfood_title.place(x = 70, y = 20)
 
-        for item in req.json():
+    #     for item in req.json():
 
-            if item['type'] == 0:
+    #         if item['type'] == 0:
 
-                # fields = ("id", "name", "type", "description", "img_path", "costIncl")
+    #             # fields = ("id", "name", "type", "description", "img_path", "costIncl")
 
-                img = ctk.CTkImage(Image.open(os.path.join(IMG_PATH, item['img_path'])), size = (125, 100))
-                ctk.CTkLabel(main, text=item['name'], image=img, height = 80, width = 125).place(x=startX, y=startY)
+    #             img = ctk.CTkImage(Image.open(os.path.join(IMG_PATH, item['img_path'])), size = (125, 100))
+    #             ctk.CTkLabel(main, text=item['name'], image=img, height = 80, width = 125).place(x=startX, y=startY)
 
-                startX += 10
-                startY += 10
+    #             startX += 10
+    #             startY += 10
 
             
             
 
-        # hide()
-        # go_back()
+    hide()
+    go_back()
 
-        # hotfood_title = ctk.CTkLabel(main, text = "Hot Foods", font = ("bold", 35), text_color = "#ffffff")
-        # hotfood_title.place(x = 70, y = 20)
+    hotfood_title = ctk.CTkLabel(main, text = "Hot Foods", font = ("bold", 35), text_color = "#ffffff")
+    hotfood_title.place(x = 70, y = 20)
 
 
-        # hotfood_img1 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"menuitem_noodles")), size = (125, 100))
+    hotfood_img1 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"menuitem_noodles.png")), size = (125, 100))
 
-        # hotfood_label_t1 = ctk.CTkLabel(main, image = hotfood_img1, text="", height = 80, width = 125)
-        # hotfood_label_t1.place(x = 15, y = 70)
+    hotfood_label_t1 = ctk.CTkLabel(main, image = hotfood_img1, text="", height = 80, width = 125)
+    hotfood_label_t1.place(x = 15, y = 70)
 
-        # hotfood_label1 = ctk.CTkLabel(main, width= 40, height = 20, text="$3.80", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
-        # hotfood_label1.place(x = 15, y = 175)
+    hotfood_label1 = ctk.CTkLabel(main, width= 40, height = 20, text="$3.80", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
+    hotfood_label1.place(x = 15, y = 175)
 
-        # hotfood_label2 = ctk.CTkLabel(main, width= 75, height = 21, text="Noodles", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
-        # hotfood_label2.place(x = 65, y = 175)
+    hotfood_label2 = ctk.CTkLabel(main, width= 75, height = 21, text="Noodles", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
+    hotfood_label2.place(x = 65, y = 175)
 
-        # hotfood_img2 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"menuitem_pie.png")), size = (125, 100))
-        # hotfood_label_t2 = ctk.CTkLabel(main, image = hotfood_img2, text="", height = 80, width = 125)
-        # hotfood_label_t2.place(x = 15, y = 215)
+    hotfood_img2 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"menuitem_pie.png")), size = (125, 100))
+    hotfood_label_t2 = ctk.CTkLabel(main, image = hotfood_img2, text="", height = 80, width = 125)
+    hotfood_label_t2.place(x = 15, y = 215)
 
-        # hotfood_label3 = ctk.CTkLabel(main, width= 40, height = 20, text="$4.80", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
-        # hotfood_label3.place(x = 15, y = 325)
-        # hotfood_label4 = ctk.CTkLabel(main, width= 75, height = 21, text="Meat Pie", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
-        # hotfood_label4.place(x = 65, y = 325)
+    hotfood_label3 = ctk.CTkLabel(main, width= 40, height = 20, text="$4.80", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
+    hotfood_label3.place(x = 15, y = 325)
+    hotfood_label4 = ctk.CTkLabel(main, width= 75, height = 21, text="Meat Pie", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
+    hotfood_label4.place(x = 65, y = 325)
 
-        # hotfood_img3 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_GarlicBread.png")), size = (125, 100))
-        # hotfood_label_t3 = ctk.CTkLabel(main, image = hotfood_img3, text="", height = 80, width = 125)
-        # hotfood_label_t3.place(x = 160, y = 70)
-        # hotfood_label5 = ctk.CTkLabel(main, width= 40, height = 20, text="$2.00", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
-        # hotfood_label5.place(x = 160, y = 175)
-        # hotfood_label6 = ctk.CTkLabel(main, width= 75, height = 21, text="Garlic Bread", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
-        # hotfood_label6.place(x = 210, y = 175)
+    hotfood_img3 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_GarlicBread.png")), size = (125, 100))
+    hotfood_label_t3 = ctk.CTkLabel(main, image = hotfood_img3, text="", height = 80, width = 125)
+    hotfood_label_t3.place(x = 160, y = 70)
+    hotfood_label5 = ctk.CTkLabel(main, width= 40, height = 20, text="$2.00", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
+    hotfood_label5.place(x = 160, y = 175)
+    hotfood_label6 = ctk.CTkLabel(main, width= 75, height = 21, text="Garlic Bread", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
+    hotfood_label6.place(x = 210, y = 175)
 
-        # hotfood_img4 = ctk.CTkImage(Image.open("MenuItem_HotDogs.png"), size = (125, 100))
-        # hotfood_label_t4 = ctk.CTkLabel(main, image = hotfood_img4, text="", height = 80, width = 125)
-        # hotfood_label_t4.place(x = 160, y = 215)
-        # hotfood_label7 = ctk.CTkLabel(main, width= 40, height = 20, text="$4.00", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
-        # hotfood_label7.place(x = 160, y = 325)
-        # hotfood_label8 = ctk.CTkLabel(main, width= 75, height = 21, text="Hot Dogs", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
-        # hotfood_label8.place(x = 210, y = 325)
+    hotfood_img4 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_HotDogs.png")), size = (125, 100))
+    hotfood_label_t4 = ctk.CTkLabel(main, image = hotfood_img4, text="", height = 80, width = 125)
+    hotfood_label_t4.place(x = 160, y = 215)
+    hotfood_label7 = ctk.CTkLabel(main, width= 40, height = 20, text="$4.00", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
+    hotfood_label7.place(x = 160, y = 325)
+    hotfood_label8 = ctk.CTkLabel(main, width= 75, height = 21, text="Hot Dogs", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
+    hotfood_label8.place(x = 210, y = 325)
 
-        # veganlabel_img = ctk.CTkImage(Image.open("vegan.png"), size = (35, 35))
-        # veganlabel1 = ctk.CTkLabel(hotfood_label_t1, width= 35, height= 35, fg_color="#028756", bg_color = "#028756", image = veganlabel_img, text = "")
-        # veganlabel1.place(x = 5, y = 5)
-        # veganlabel2 = ctk.CTkLabel(hotfood_label_t3, width= 35, height= 35, fg_color="#028756", bg_color = "#028756", image = veganlabel_img, text = "")
-        # veganlabel2.place(x = 5, y = 5)
-      
+    veganlabel_img = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"vegan.png")), size = (35, 35))
+    veganlabel1 = ctk.CTkLabel(hotfood_label_t1, width= 35, height= 35, fg_color="#028756", bg_color = "#028756", image = veganlabel_img, text = "")
+    veganlabel1.place(x = 5, y = 5)
+    veganlabel2 = ctk.CTkLabel(hotfood_label_t3, width= 35, height= 35, fg_color="#028756", bg_color = "#028756", image = veganlabel_img, text = "")
+    veganlabel2.place(x = 5, y = 5)
+    
 def menu_coldfood():
     
     global coldfood_title, coldfood_label_t1, coldfood_label_t2, coldfood_label_t3, coldfood_label_t4 ,coldfood_label1, coldfood_label2, coldfood_label3, coldfood_label4, coldfood_label5, coldfood_label6, coldfood_label7, coldfood_label8
@@ -524,7 +516,7 @@ def menu_coldfood():
 
     coldfood_title = ctk.CTkLabel(main, text = "Cold Foods", font = ("bold", 35), text_color = "#ffffff")
     coldfood_title.place(x = 70, y = 20)
-    coldfood_img1 = ctk.CTkImage(Image.open("MenuItem_Sushi.png"), size = (125, 100))
+    coldfood_img1 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_Sushi.png")), size = (125, 100))
     coldfood_label_t1 = ctk.CTkLabel(main, image = coldfood_img1, text="", height = 80, width = 125)
     coldfood_label_t1.place(x = 15, y = 70)
     coldfood_label1 = ctk.CTkLabel(main, width= 40, height = 20, text="$5.80", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -532,7 +524,7 @@ def menu_coldfood():
     coldfood_label2 = ctk.CTkLabel(main, width= 75, height = 21, text="Sushi", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     coldfood_label2.place(x = 65, y = 175)
 
-    coldfood_img2 = ctk.CTkImage(Image.open("MenuItem_Sandwhich.png"), size = (125, 100))
+    coldfood_img2 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_Sandwhich.png")), size = (125, 100))
     coldfood_label_t2 = ctk.CTkLabel(main, image = coldfood_img2, text="", height = 80, width = 125)
     coldfood_label_t2.place(x = 15, y = 215)
     coldfood_label3 = ctk.CTkLabel(main, width= 40, height = 20, text="$4.80", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -540,7 +532,7 @@ def menu_coldfood():
     coldfood_label4 = ctk.CTkLabel(main, width= 75, height = 21, text="Sandwhich", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     coldfood_label4.place(x = 65, y = 325)
 
-    coldfood_img3 = ctk.CTkImage(Image.open("MenuItem_Salad.png"), size = (125, 100))
+    coldfood_img3 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_Salad.png")), size = (125, 100))
     coldfood_label_t3 = ctk.CTkLabel(main, image = coldfood_img3, text="", height = 80, width = 125)
     coldfood_label_t3.place(x = 160, y = 70)
     coldfood_label5 = ctk.CTkLabel(main, width= 40, height = 20, text="$7.50", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -548,7 +540,7 @@ def menu_coldfood():
     coldfood_label6 = ctk.CTkLabel(main, width= 75, height = 21, text="Salad", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     coldfood_label6.place(x = 210, y = 175)
 
-    coldfood_img4 = ctk.CTkImage(Image.open("MenuItem_Wrap.png"), size = (125, 100))
+    coldfood_img4 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_Wraps.png")), size = (125, 100))
     coldfood_label_t4 = ctk.CTkLabel(main, image = coldfood_img4, text="", height = 80, width = 125)
     coldfood_label_t4.place(x = 160, y = 215)
     coldfood_label7 = ctk.CTkLabel(main, width= 40, height = 20, text="$5.50", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -556,7 +548,7 @@ def menu_coldfood():
     coldfood_label8 = ctk.CTkLabel(main, width= 75, height = 21, text="Wrap", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     coldfood_label8.place(x = 210, y = 325)
 
-    veganlabel_img = ctk.CTkImage(Image.open("vegan.png"), size = (35, 35))
+    veganlabel_img = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"vegan.png")), size = (35, 35))
     veganlabel1 = ctk.CTkLabel(coldfood_label_t1, width= 35, height= 35, fg_color="#028756", bg_color = "#028756", image = veganlabel_img, text = "")
     veganlabel1.place(x = 5, y = 5)
     veganlabel2 = ctk.CTkLabel(coldfood_label_t2, width= 35, height= 35, fg_color="#028756", bg_color = "#028756", image = veganlabel_img, text = "")
@@ -575,7 +567,7 @@ def menu_desserts():
 
     desserts_title = ctk.CTkLabel(main, text = "Desserts", font = ("bold", 35), text_color = "#ffffff")
     desserts_title.place(x = 85, y = 20)
-    desserts_img1 = ctk.CTkImage(Image.open("menuitem_magnum.png"), size = (125, 100))
+    desserts_img1 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"menuitem_magnum.png")), size = (125, 100))
     desserts_label_t1 = ctk.CTkLabel(main, image = desserts_img1, text="", height = 80, width = 125)
     desserts_label_t1.place(x = 15, y = 70)
     desserts_label1 = ctk.CTkLabel(main, width= 40, height = 20, text="$4.50", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -583,7 +575,7 @@ def menu_desserts():
     desserts_label2 = ctk.CTkLabel(main, width= 75, height = 21, text="Magnum", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     desserts_label2.place(x = 65, y = 175)
 
-    desserts_img2 = ctk.CTkImage(Image.open("menuitem_moosies.png"), size = (125, 100))
+    desserts_img2 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"menuitem_moosies.png")), size = (125, 100))
     desserts_label_t2 = ctk.CTkLabel(main, image = desserts_img2, text="", height = 80, width = 125)
     desserts_label_t2.place(x = 15, y = 215)
     desserts_label3 = ctk.CTkLabel(main, width= 40, height = 20, text="$2.00", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -591,7 +583,7 @@ def menu_desserts():
     desserts_label4 = ctk.CTkLabel(main, width= 75, height = 21, text="Moosies", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     desserts_label4.place(x = 65, y = 325)
 
-    desserts_img3 = ctk.CTkImage(Image.open("menuitem_slushies.png"), size = (125, 100))
+    desserts_img3 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"menuitem_slushies.png")), size = (125, 100))
     desserts_label_t3 = ctk.CTkLabel(main, image = desserts_img3, text="", height = 80, width = 125)
     desserts_label_t3.place(x = 160, y = 70)
     desserts_label5 = ctk.CTkLabel(main, width= 40, height = 20, text="$2.50", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -599,7 +591,7 @@ def menu_desserts():
     desserts_label6 = ctk.CTkLabel(main, width= 75, height = 21, text="Slushies", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     desserts_label6.place(x = 210, y = 175)
 
-    desserts_img4 = ctk.CTkImage(Image.open("MenuItem_Juicies.png"), size = (125, 100))
+    desserts_img4 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_Juicies.png")), size = (125, 100))
     desserts_label_t4 = ctk.CTkLabel(main, image = desserts_img4, text="", height = 80, width = 125)
     desserts_label_t4.place(x = 160, y = 215)
     desserts_label7 = ctk.CTkLabel(main, width= 40, height = 20, text="$1.00", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -607,7 +599,7 @@ def menu_desserts():
     desserts_label8 = ctk.CTkLabel(main, width= 75, height = 21, text="Juicies", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     desserts_label8.place(x = 210, y = 325)
 
-    veganlabel_img = ctk.CTkImage(Image.open("vegan.png"), size = (35, 35))
+    veganlabel_img = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"vegan.png")), size = (35, 35))
     veganlabel3 = ctk.CTkLabel(desserts_label_t3, width= 35, height= 35, fg_color="#028756", bg_color = "#028756", image = veganlabel_img, text = "")
     veganlabel3.place(x = 5, y = 5)
     veganlabel4 = ctk.CTkLabel(desserts_label_t4, width= 35, height= 35, fg_color="#028756", bg_color = "#028756", image = veganlabel_img, text = "")
@@ -622,7 +614,7 @@ def menu_drinks():
 
     drinks_title = ctk.CTkLabel(main, text = "Drinks", font = ("bold", 35), text_color = "#ffffff")
     drinks_title.place(x = 105, y = 20)
-    drinks_img1 = ctk.CTkImage(Image.open("MenuItem_Water.png"), size = (125, 100))
+    drinks_img1 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_Water.png")), size = (125, 100))
     drinks_label_t1 = ctk.CTkLabel(main, image = drinks_img1, text="", height = 80, width = 125)
     drinks_label_t1.place(x = 15, y = 70)
     drinks_label1 = ctk.CTkLabel(main, width= 40, height = 20, text="$4.00", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -630,7 +622,7 @@ def menu_drinks():
     drinks_label2 = ctk.CTkLabel(main, width= 75, height = 21, text="Water", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     drinks_label2.place(x = 65, y = 175)
 
-    drinks_img2 = ctk.CTkImage(Image.open("MenuItem_SoftDrinks.png"), size = (125, 100))
+    drinks_img2 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_SoftDrinks.png")), size = (125, 100))
     drinks_label_t2 = ctk.CTkLabel(main, image = drinks_img2, text="", height = 80, width = 125)
     drinks_label_t2.place(x = 15, y = 215)
     drinks_label3 = ctk.CTkLabel(main, width= 40, height = 20, text="$3.50", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -638,7 +630,7 @@ def menu_drinks():
     drinks_label4 = ctk.CTkLabel(main, width= 75, height = 21, text="Soft Drink", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     drinks_label4.place(x = 65, y = 325)
 
-    drinks_img3 = ctk.CTkImage(Image.open("MenuItem_Lipton.png"), size = (125, 100))
+    drinks_img3 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_Lipton.png")), size = (125, 100))
     drinks_label_t3 = ctk.CTkLabel(main, image = drinks_img3, text="", height = 80, width = 125)
     drinks_label_t3.place(x = 160, y = 70)
     drinks_label5 = ctk.CTkLabel(main, width= 40, height = 20, text="$4.50", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -646,7 +638,7 @@ def menu_drinks():
     drinks_label6 = ctk.CTkLabel(main, width= 75, height = 21, text="Lipton", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     drinks_label6.place(x = 210, y = 175)
 
-    drinks_img4 = ctk.CTkImage(Image.open("MenuItem_Coffee.png"), size = (125, 100))
+    drinks_img4 = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"MenuItem_Coffee.png")), size = (125, 100))
     drinks_label_t4 = ctk.CTkLabel(main, image = drinks_img4, text="", height = 80, width = 125)
     drinks_label_t4.place(x = 160, y = 215)
     drinks_label7 = ctk.CTkLabel(main, width= 40, height = 20, text="$4.50", text_color = "#ffffff", fg_color="#2a8711", corner_radius=5)
@@ -654,7 +646,7 @@ def menu_drinks():
     drinks_label8 = ctk.CTkLabel(main, width= 75, height = 21, text="Coffee", text_color = "#ffffff", fg_color="#191819", corner_radius=5)
     drinks_label8.place(x = 210, y = 325)
 
-    veganlabel_img = ctk.CTkImage(Image.open("vegan.png"), size = (35, 35))
+    veganlabel_img = ctk.CTkImage(Image.open(os.path.join(IMG_PATH,"vegan.png")), size = (35, 35))
     veganlabel1 = ctk.CTkLabel(drinks_label_t1, width= 35, height= 35, fg_color="#028756", bg_color = "#028756", image = veganlabel_img, text = "")
     veganlabel1.place(x = 5, y = 5)
     veganlabel2 = ctk.CTkLabel(drinks_label_t2, width= 35, height= 35, fg_color="#028756", bg_color = "#028756", image = veganlabel_img, text = "")
@@ -684,7 +676,7 @@ def calculate(*args):
         approve = True
     else:
         CTkMessagebox(title="Warning!", message="Please select a menu item before changing quantity.",
-                                    icon="warning.png", option_1="Ok")
+                                    icon=os.path.join(IMG_PATH,"warning.png"), option_1="Ok")
         of_quantity.set("1")
 
 def check():
@@ -698,7 +690,7 @@ def add_verify():
                 add()
             else:
                 msg = CTkMessagebox(title="Warning!", message="You've indicated that you are vegan/vegetarian, the selected menu items have no suitable substitutes. Are you sure you want to add this to your cart?",
-                                        icon="warning.png", option_1="No", option_2 = "Yes")
+                                        icon=os.path.join(IMG_PATH,"warning.png"), option_1="No", option_2 = "Yes")
                 msg = msg.get()
                 if msg == "Yes":
                     add()
@@ -708,7 +700,7 @@ def add_verify():
             add()
     else:
         CTkMessagebox(title="Warning!", message="Please select a menu item before adding to cart.",
-                                    icon="warning.png", option_1="Ok")
+                                    icon=os.path.join(IMG_PATH,"warning.png"), option_1="Ok")
 
 def add():
     global of_pitem, trolley, indicator, trolley_list, number, record_date
@@ -722,7 +714,7 @@ def add():
     menu_items = [f"{item['MenuItem']} : QTY {item['Quantity']} : ${item['Price']} : #{item['Key']}" for item in trolley_list]
     of_pitem.configure(values=menu_items)
     msg = CTkMessagebox(title="Confirmed!", message="Your order has been added to cart.",
-                                                    icon="success.png", option_1="Ok")
+                                                    icon=os.path.join(IMG_PATH,"success.png"), option_1="Ok")
 
 def remove():
     global remove_item
@@ -740,7 +732,7 @@ def purchase():
                 if remove_item == False:
                         if selected_dict2 in trolley.values():
                             msg = CTkMessagebox(title="Warning!", message="Are you sure you want to purchase this order?",
-                                                            icon="warning.png", option_1="No", option_2 = "Yes")
+                                                            icon=os.path.join(IMG_PATH,"warning.png"), option_1="No", option_2 = "Yes")
                             msg = msg.get()
                             if msg == "Yes":
                                 indicator -= 1
@@ -758,10 +750,10 @@ def purchase():
                                     of_pitem.configure(values=menu_items)
                                     of_pitem.set("Select Ticket Here")
                                     msg = CTkMessagebox(title="Confirmed!", message="Your order has been successfully purchased.",
-                                                        icon="success.png", option_1="Ok")
+                                                        icon=os.path.join(IMG_PATH,"success.png"), option_1="Ok")
                             else:
                                 msg = CTkMessagebox(title="Important!", message="Cancelled Purchase.",
-                                                            icon="failure.png", option_1="Ok")
+                                                            icon=os.path.join(IMG_PATH,"failure.png"), option_1="Ok")
                 else:
                     if selected_dict2 in trolley.values():
                         selected1 = of_pitem.get()
@@ -774,7 +766,7 @@ def purchase():
                             trolley_list.remove(selected2)
                             menu_items = [f"{item['MenuItem']} : QTY {item['Quantity']} : ${item['Price']} : #{item['Key']}" for item in trolley_list]
                             msg = CTkMessagebox(title="Confirmed!", message="Your order has been removed from your cart.",
-                                                    icon="success.png", option_1="Ok")
+                                                    icon=os.path.join(IMG_PATH,"success.png"), option_1="Ok")
                             of_pitem.configure(values=menu_items)
                             of_pitem.set("Select Ticket Here")
                             remove_item = False
@@ -782,7 +774,7 @@ def purchase():
         
         except ValueError:
             msg = CTkMessagebox(title="Error!", message="Please select a ticket first.",
-                                                    icon="warning.png", option_1="Ok")
+                                                    icon=os.path.join(IMG_PATH,"warning.png"), option_1="Ok")
     else:
         print("Invalid indicator value")
 
